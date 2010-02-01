@@ -18,9 +18,11 @@
       (setf *stream*
             (unless must-close
               stream)))
-    (cond ((/= code 200) (error "http error ~a." code))
-          ((equal "gzip" (cdr (assoc :content-encoding headers)))
-           (let ((result (chipz:decompress nil 'chipz:gzip body)))
-             (map-into (make-string (length result))
-                       #'code-char result)))
-          (t body))))
+    (values
+     (cond ((/= code 200) (error "http error ~a." code))
+           ((equal "gzip" (cdr (assoc :content-encoding headers)))
+            (let ((result (chipz:decompress nil 'chipz:gzip body)))
+              (map-into (make-string (length result))
+                        #'code-char result)))
+           (t body))
+     uri)))
