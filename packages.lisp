@@ -49,7 +49,8 @@
    #:top-persons
    #:top-countries
    #:with-movies
-   #:movie-storage))
+   #:movie-storage
+   #:number-of-movies-by-decade))
 
 (defpackage #:iso-3166-1
   (:use #:cl)
