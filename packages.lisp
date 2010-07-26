@@ -1,7 +1,7 @@
 ;;; -*- Mode: Lisp -*-
 
 (defpackage #:tracking
-  (:use #:closer-common-lisp)
+  (:use #:cl)
   (:export
 
    #:person
