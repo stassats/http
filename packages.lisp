@@ -48,8 +48,7 @@
    #:top-years
    #:top-persons
    #:top-countries
-   #:with-movies
-   #:movie-storage
+   #:with-tracking
    #:number-of-movies-by-decade))
 
 (defpackage #:iso-3166-1
