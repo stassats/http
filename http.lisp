@@ -28,7 +28,8 @@
                                               (streamp *stream*)
                                               (open-stream-p *stream*))
                                      *stream*)
-                           :force-binary binary)
+                           :force-binary binary
+                           :user-agent :firefox)
     (declare (ignore reason-phrase))
     (when reuse-connection
       (setf *stream*
