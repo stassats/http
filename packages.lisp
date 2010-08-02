@@ -14,7 +14,6 @@
    #:unwatched-movie
    #:theatre
    #:view
-   #:views
 
    #:title
    #:date
@@ -49,7 +48,47 @@
    #:top-persons
    #:top-countries
    #:with-tracking
-   #:number-of-movies-by-decade))
+   #:number-of-movies-by-decade
+   #:book
+   #:english-title
+   #:authors
+   #:isbn
+   #:pages
+   #:read-p
+   #:book-format
+   #:novel
+   #:novella
+   #:essay
+   #:play
+   #:short-story
+   #:short-story-collection
+   #:poem
+   #:reading
+   #:from-page
+   #:to-page
+   #:tv-series
+   #:year-start
+   #:year-end
+   #:creators
+   #:episodes
+   #:episode
+   #:original-air-date
+   #:season
+   #:episode-number
+   #:activity
+   #:distance
+   #:average-speed
+   #:max-speed
+   #:average-heart-rate
+   #:max-heart-rate
+   #:elevation
+   #:bicycle-ride
+   #:run
+   #:object
+   #:actions
+   #:actions
+   #:action
+   #:action-on-object))
 
 (defpackage #:iso-3166-1
   (:use #:cl)
