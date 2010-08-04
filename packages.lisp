@@ -88,7 +88,10 @@
    #:actions
    #:actions
    #:action
-   #:action-on-object))
+   #:action-on-object
+   #:role
+   #:actor
+   #:role-character))
 
 (defpackage #:iso-3166-1
   (:use #:cl)
