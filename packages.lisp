@@ -91,7 +91,12 @@
    #:action-on-object
    #:role
    #:actor
-   #:role-character))
+   #:role-character
+   #:song
+   #:performer
+   #:musical-ensemble
+   #:music-album
+   #:compositions))
 
 (defpackage #:iso-3166-1
   (:use #:cl)
