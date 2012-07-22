@@ -1,43 +1,65 @@
 
-(in-package #:http)
+(in-package :http)
 
 (defparameter *stream* nil)
 
-(defun ungzip (body headers binary)
-  (let ((charset
-         (drakma:parameter-value "charset"
-                                 (nth-value 2
-                                            (drakma:get-content-type headers))))
-        (decompressed (chipz:decompress nil 'chipz:gzip body)))
-    (if binary
-        decompressed
-        (flexi-streams:octets-to-string decompressed
-                                        :external-format
-                                        (intern (string-upcase charset)
-                                                :keyword)))))
+(defun process-body (body headers binary)
+  (let* ((charset
+           (drakma:parameter-value "charset"
+                                   (nth-value 2
+                                              (drakma:get-content-type headers))))
+         (external-format (if charset
+                              (or (find-symbol (string-upcase charset)
+                                               :keyword)
+                                  :utf-8)
+                              :utf-8)))
+    (when (and (equal (drakma:header-value :content-encoding headers)
+                      "gzip")
+               (equal (array-element-type body)
+                      '(unsigned-byte 8)))
+      (setf body
+            (chipz:decompress nil 'chipz:gzip body)))
+    
+    (cond (binary
+           body)
+          ((not (stringp body))
+           (flexi-streams:octets-to-string body
+                                           :external-format external-format))
+          (t
+           body))))
 
-
-(defun request (url &key parameters reuse-connection binary)
-  (multiple-value-bind (body code headers uri stream must-close reason-phrase)
-      (drakma:http-request url
-                           :parameters parameters
-                           :additional-headers '(("Accept-Encoding" . "gzip"))
-                           :keep-alive reuse-connection
-                           :close (not reuse-connection)
-                           :stream (when (and reuse-connection
-                                              (streamp *stream*)
-                                              (open-stream-p *stream*))
-                                     *stream*)
-                           :force-binary binary
-                           :user-agent :firefox)
-    (declare (ignore reason-phrase))
+(defun request (url &key parameters reuse-connection binary
+                         cookie (method :get)
+                         form-data
+                         (content-length nil content-length-provided)
+                         gzip)
+  (multiple-value-bind (body code headers uri stream must-close)
+      (apply #'drakma:http-request
+             url
+             :method method
+             :parameters parameters
+             :additional-headers (and gzip
+                                      '(("Accept-Encoding" . "gzip")))
+             :keep-alive reuse-connection
+             :close (not reuse-connection)
+             :stream (when (and reuse-connection
+                                (streamp *stream*)
+                                (open-stream-p *stream*))
+                       *stream*)
+             :force-binary binary
+             :user-agent :firefox
+             :cookie-jar cookie
+             :form-data form-data
+             (and content-length-provided
+                  `(:content-length ,content-length)))
     (when reuse-connection
       (setf *stream*
             (unless must-close
               stream)))
     (values
-     (cond ((/= code 200) (error "http error ~a." code))
-           ((equal "gzip" (drakma:header-value :content-encoding headers))
-            (ungzip body headers binary))
-           (t body))
+     (cond ((/= code 200 302)
+            (error "http error ~a. ~a" code
+                   (process-body body headers binary)))
+           (t
+            (process-body body headers binary)))
      uri)))

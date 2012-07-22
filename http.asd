@@ -1,4 +1,4 @@
-(asdf:defsystem #:http
+(asdf:defsystem http
   :name "http"
   :serial t
   :depends-on (drakma chipz flexi-streams)
