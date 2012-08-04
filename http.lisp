@@ -18,8 +18,8 @@
                (equal (array-element-type body)
                       '(unsigned-byte 8)))
       (setf body
-            (chipz:decompress nil 'chipz:gzip body)))
-    
+            (chipz:decompress nil 'chipz:gzip
+                              (coerce body '(simple-array (unsigned-byte 8) (*))))))
     (cond (binary
            body)
           ((not (stringp body))
