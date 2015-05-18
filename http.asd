@@ -1,6 +1,6 @@
 (asdf:defsystem http
   :name "http"
   :serial t
-  :depends-on (drakma chipz flexi-streams)
+  :depends-on (drakma flexi-streams)
   :components ((:file "packages")
                (:file "http")))

@@ -13,13 +13,6 @@
                                                :keyword)
                                   :utf-8)
                               :utf-8)))
-    (when (and (equal (drakma:header-value :content-encoding headers)
-                      "gzip")
-               (equal (array-element-type body)
-                      '(unsigned-byte 8)))
-      (setf body
-            (chipz:decompress nil 'chipz:gzip
-                              (coerce body '(simple-array (unsigned-byte 8) (*))))))
     (cond (binary
            body)
           ((not (stringp body))
@@ -28,11 +21,17 @@
           (t
            body))))
 
-(defun request (url &key parameters reuse-connection binary
-                         cookie (method :get)
+(defun request (url &key parameters
+                         reuse-connection
+                         binary
+                         cookie
+                         (method :get)
                          form-data
+                         content
+                         (content-type "application/x-www-form-urlencoded")
                          (content-length nil content-length-provided)
-                         gzip)
+                         gzip
+                         (user-agent :drakma))
   (multiple-value-bind (body code headers uri stream must-close)
       (apply #'drakma:http-request
              url
@@ -46,10 +45,14 @@
                                 (streamp *stream*)
                                 (open-stream-p *stream*))
                        *stream*)
+             :decode-content t
              :force-binary binary
              :user-agent :firefox
              :cookie-jar cookie
              :form-data form-data
+             :content content
+             :content-type content-type
+             :user-agent user-agent
              (and content-length-provided
                   `(:content-length ,content-length)))
     (when reuse-connection
