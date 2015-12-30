@@ -31,14 +31,17 @@
                          (content-type "application/x-www-form-urlencoded")
                          (content-length nil content-length-provided)
                          gzip
+                         accept-language
                          (user-agent :drakma))
   (multiple-value-bind (body code headers uri stream must-close)
       (apply #'drakma:http-request
              url
              :method method
              :parameters parameters
-             :additional-headers (and gzip
-                                      '(("Accept-Encoding" . "gzip")))
+             :additional-headers `(,@(and gzip
+                                          '(("Accept-Encoding" . "gzip")))
+                                   ,@(and accept-language
+                                          `(("Accept-Language" . ,accept-language))))
              :keep-alive reuse-connection
              :close (not reuse-connection)
              :stream (when (and reuse-connection
